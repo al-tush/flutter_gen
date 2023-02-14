@@ -12,7 +12,9 @@ environment:
 
 dependencies:
   flutter_gen_core:
-    path: ../core
+    git:
+      url: https://github.com/al-tush/flutter_gen
+      path: packages/core
 
   build: '>=2.0.0 <3.0.0'
   collection: '>=1.15.0 <2.0.0'
