@@ -302,10 +302,12 @@ Future<_Statement?> _createAssetTypeStatement(
   if (FileSystemEntity.isDirectorySync(childAssetAbsolutePath)) {
     final childClassName = '\$${assetType.path.camelCase().capitalize()}Gen';
     return _Statement(
+      isThemed: assetType.isThemed,
       type: childClassName,
       filePath: assetType.posixStylePath,
       name: assetType.name,
       value: '$childClassName()',
+      value2: null,
       isConstConstructor: true,
       isDirectory: true,
       needDartDoc: false,
@@ -331,10 +333,12 @@ Future<_Statement?> _createAssetTypeStatement(
         assetKey = 'packages/${config._packageName}/$assetKey';
       }
       return _Statement(
+        isThemed: assetType.isThemed,
         type: 'String',
         filePath: assetType.posixStylePath,
         name: assetType.name,
         value: '\'$assetKey\'',
+        value2: null,
         isConstConstructor: false,
         isDirectory: false,
         needDartDoc: true,
@@ -342,10 +346,12 @@ Future<_Statement?> _createAssetTypeStatement(
     } else {
       integration.isEnabled = true;
       return _Statement(
+        isThemed: assetType.isThemed,
         type: integration.className,
         filePath: assetType.posixStylePath,
         name: assetType.name,
         value: integration.classInstantiate(assetType),
+        value2: null,
         isConstConstructor: integration.isConstConstructor,
         isDirectory: false,
         needDartDoc: true,
@@ -425,11 +431,14 @@ Future<String> _dotDelimiterStyleDefinition(
         // Add this directory reference to Assets class
         // if we are not under the default asset folder
         if (dirname(assetType.path) == '.') {
+          assert(!assetType.isThemed);
           assetsStaticStatements.add(_Statement(
+            isThemed: assetType.isThemed,
             type: className,
             filePath: assetType.posixStylePath,
             name: assetType.baseName.camelCase(),
             value: '$className()',
+            value2: null,
             isConstConstructor: true,
             isDirectory: true,
             needDartDoc: true,
@@ -616,14 +625,18 @@ class $className {
 /// '$type get $name => ${isConstConstructor ? 'const' : ''} $value;';
 class _Statement {
   const _Statement({
+    required this.isThemed,
     required this.type,
     required this.filePath,
     required this.name,
     required this.value,
+    required this.value2,
     required this.isConstConstructor,
     required this.isDirectory,
     required this.needDartDoc,
   });
+
+  final bool isThemed;
 
   /// The type of this asset, e.g AssetGenImage, SvgGenImage, String, etc.
   final String type;
@@ -636,6 +649,8 @@ class _Statement {
 
   /// The code to instantiate this asset. e.g `AssetGenImage('assets/image.png');`
   final String value;
+
+  final String? value2;
 
   final bool isConstConstructor;
   final bool isDirectory;
@@ -657,5 +672,10 @@ class _Statement {
     return buffer.toString();
   }
 
-  String toStaticFieldString() => 'static const $type $name = $value;';
+  String toStaticFieldString() {
+    if (isThemed) {
+      return 'static $type get $name => _isDarkTheme ? : $value2 : $value;';
+    }
+    return 'static const $type $name = $value;';
+  }
 }

@@ -10,11 +10,13 @@ class AssetType {
     required this.rootPath,
     required this.path,
     required this.flavors,
+    this.isThemed = false,
   });
 
   final String rootPath;
   final String path;
   final Set<String> flavors;
+  final bool isThemed;
 
   final List<AssetType> _children = List.empty(growable: true);
 
@@ -53,6 +55,29 @@ class AssetType {
   String get posixStylePath => path.replaceAll(r'\', r'/');
 
   List<AssetType> get children => _children.sortedBy((e) => e.path);
+
+  static const _light = '_light';
+  static const _dark = '_dark';
+
+  String get pathWithoutTheme {
+    var name = p.withoutExtension(path);
+    if (name.endsWith(_light)) {
+      name = name.substring(0, name.length - _light.length);
+    } else if (name.endsWith(_dark)) {
+      name = name.substring(0, name.length - _dark.length);
+    }
+    return name + extension;
+  }
+
+  String pathThemed1() {
+    if (!isThemed) return path;
+    return '${p.withoutExtension(path)}$_light$extension';
+  }
+
+  String pathThemed2() {
+    assert(isThemed);
+    return '${p.withoutExtension(path)}$_dark$extension';
+  }
 
   void addChild(AssetType type) {
     _children.add(type);
