@@ -11,16 +11,24 @@ environment:
   sdk: '>=2.14.0 <3.0.0'
 
 dependencies:
-  flutter_gen_core:
-    git:
-      url: https://github.com/al-tush/flutter_gen
-      path: packages/core
-
   build: '>=2.0.0 <3.0.0'
-  collection: '>=1.15.0 <2.0.0'
   crypto: '>=3.0.0 <4.0.0'
-  glob: '>=2.0.0 <3.0.0'
+
   path: '>=1.8.0 <2.0.0'
+  yaml: '>=3.0.0 <4.0.0'
+  mime: '>=1.0.0 <2.0.0'
+  xml: '>=5.0.0 <7.0.0'
+  dartx: '>=1.0.0 <2.0.0'
+  color: '>=3.0.0 <4.0.0'
+  collection: '>=1.15.0 <2.0.0'
+  json_annotation: '>=4.4.0 <5.0.0'
+  glob: '>=2.0.0 <3.0.0'
+
+  dart_style: '>=2.0.0 <3.0.0'
+  analyzer: '>=4.7.0 <6.0.0'
+  args: '>=2.0.0 <3.0.0'
+  pub_semver: '>=2.0.0 <3.0.0'
+  source_span: '>=1.8.0 <2.0.0'
 
 dev_dependencies:
   flutter_lints: '>=2.0.1 <3.0.0'
