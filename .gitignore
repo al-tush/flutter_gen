@@ -126,3 +126,5 @@ coverage.lcov
 
 ## Melos
 .idea/runConfigurations/melos_*
+packages/core/.idea
+packages/runner/.idea

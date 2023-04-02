@@ -252,21 +252,26 @@ _Statement? _createAssetTypeStatement(
   final childAssetAbsolutePath = join(rootPath, assetType.path);
   if (assetType.isSupportedImage) {
     return _Statement(
+      isThemed: assetType.isThemed,
       type: 'AssetGenImage',
       filePath: assetType.path,
       name: name,
-      value: 'AssetGenImage(\'${posixStyle(assetType.path)}\')',
+      value: 'AssetGenImage(\'${posixStyle(assetType.pathThemed1())}\')',
+      value2: assetType.isThemed ? 'AssetGenImage(\'${posixStyle(assetType.pathThemed2())}\')' : null,
       isConstConstructor: true,
       isDirectory: false,
       needDartDoc: true,
     );
   } else if (FileSystemEntity.isDirectorySync(childAssetAbsolutePath)) {
+    assert(!assetType.isThemed);
     final childClassName = '\$${assetType.path.camelCase().capitalize()}Gen';
     return _Statement(
+      isThemed: assetType.isThemed,
       type: childClassName,
       filePath: assetType.path,
       name: name,
       value: '$childClassName()',
+      value2: null,
       isConstConstructor: true,
       isDirectory: true,
       needDartDoc: false,
@@ -277,10 +282,12 @@ _Statement? _createAssetTypeStatement(
     );
     if (integration == null) {
       return _Statement(
+        isThemed: assetType.isThemed,
         type: 'String',
         filePath: assetType.path,
         name: name,
-        value: '\'${posixStyle(assetType.path)}\'',
+        value: '\'${posixStyle(assetType.pathThemed1())}\'',
+        value2: assetType.isThemed ? '\'${posixStyle(assetType.pathThemed2())}\'' : null,
         isConstConstructor: false,
         isDirectory: false,
         needDartDoc: true,
@@ -288,10 +295,12 @@ _Statement? _createAssetTypeStatement(
     } else {
       integration.isEnabled = true;
       return _Statement(
+        isThemed: assetType.isThemed,
         type: integration.className,
         filePath: assetType.path,
         name: name,
-        value: integration.classInstantiate(posixStyle(assetType.path)),
+        value: integration.classInstantiate(posixStyle(assetType.pathThemed1())),
+        value2: assetType.isThemed ? integration.classInstantiate(posixStyle(assetType.pathThemed2())) : null,
         isConstConstructor: integration.isConstConstructor,
         isDirectory: false,
         needDartDoc: true,
@@ -324,6 +333,7 @@ String _dotDelimiterStyleDefinition(
 
     if (FileSystemEntity.isDirectorySync(assetAbsolutePath)) {
       final statements = assetType.children
+          .groupToThemes()
           .mapToIsUniqueWithoutExtension()
           .map(
             (e) => _createAssetTypeStatement(
@@ -347,11 +357,14 @@ String _dotDelimiterStyleDefinition(
         // Add this directory reference to Assets class
         // if we are not under the default asset folder
         if (dirname(assetType.path) == '.') {
+          assert(!assetType.isThemed);
           assetsStaticStatements.add(_Statement(
+            isThemed: assetType.isThemed,
             type: className,
             filePath: assetType.path,
             name: assetType.baseName.camelCase(),
             value: '$className()',
+            value2: null,
             isConstConstructor: true,
             isDirectory: true,
             needDartDoc: true,
@@ -512,6 +525,10 @@ String _assetGenImageClassDefinition(String packageName) {
 
   return '''
 
+var _isDarkTheme = false;
+
+void setDarkTheme(bool value) => _isDarkTheme = value;
+
 class AssetGenImage {
   const AssetGenImage(this._assetName);
 
@@ -581,27 +598,40 @@ class AssetGenImage {
 
 class _Statement {
   const _Statement({
+    required this.isThemed,
     required this.type,
     required this.filePath,
     required this.name,
     required this.value,
+    required this.value2,
     required this.isConstConstructor,
     required this.isDirectory,
     required this.needDartDoc,
   });
 
+  final bool isThemed;
   final String type;
   final String filePath;
   final String name;
   final String value;
+  final String? value2;
   final bool isConstConstructor;
   final bool isDirectory;
   final bool needDartDoc;
 
-  String toDartDocString() => '/// File path: ${posixStyle(filePath)}';
+  String toDartDocString() => '/// File path: ${posixStyle(filePath)}${isThemed ? ' (light and dark)' : ''}';
 
-  String toGetterString() =>
-      '$type get $name => ${isConstConstructor ? 'const' : ''} $value;';
+  String toGetterString() {
+    if (isThemed) {
+      return '$type get $name => _isDarkTheme ? ${isConstConstructor ? 'const' : ''} $value2 : ${isConstConstructor ? 'const' : ''} $value;';
+    }
+    return '$type get $name => ${isConstConstructor ? 'const' : ''} $value;';
+  }
 
-  String toStaticFieldString() => 'static const $type $name = $value;';
+  String toStaticFieldString() {
+    if (isThemed) {
+      return 'static $type get $name => _isDarkTheme ? : $value2 : $value;';
+    }
+    return 'static const $type $name = $value;';
+  }
 }
