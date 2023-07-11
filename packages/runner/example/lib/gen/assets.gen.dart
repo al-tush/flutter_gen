@@ -277,7 +277,7 @@ class SvgGenImage {
     bool excludeFromSemantics = false,
     SvgTheme theme = const SvgTheme(),
     ColorFilter? colorFilter,
-    @deprecated Color? color,
+    Color? color,
     @deprecated BlendMode colorBlendMode = BlendMode.srcIn,
     @deprecated Clip? clipBehavior,
     @deprecated bool cacheColorFilter = false,
