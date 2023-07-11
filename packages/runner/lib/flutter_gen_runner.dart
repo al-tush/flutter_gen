@@ -4,11 +4,12 @@ import 'dart:io';
 import 'package:build/build.dart';
 import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart';
-import 'package:flutter_gen_core/flutter_generator.dart';
-import 'package:flutter_gen_core/settings/config.dart';
 
 import 'package:glob/glob.dart';
 import 'package:path/path.dart';
+
+import 'core/flutter_generator.dart';
+import 'core/settings/config.dart';
 
 Builder build(BuilderOptions options) => FlutterGenBuilder();
 
