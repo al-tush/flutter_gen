@@ -39,8 +39,8 @@ class SvgIntegration extends Integration {
     SvgTheme theme = const SvgTheme(),
     ColorFilter? colorFilter,
     Color? color,
+    Clip clipBehavior = Clip.hardEdge,
     @deprecated BlendMode colorBlendMode = BlendMode.srcIn,
-    @deprecated Clip clipBehavior = Clip.hardEdge,
     @deprecated bool cacheColorFilter = false,
   }) {
     return SvgPicture.asset(
