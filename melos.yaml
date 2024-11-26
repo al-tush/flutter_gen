@@ -1,4 +1,4 @@
-name: FlutterGen
+name: DSFlutterGen
 
 packages:
   - packages/**

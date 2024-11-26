@@ -66,7 +66,7 @@ class FlutterGenerator {
       final assetsPath =
           normalize(join(pubspecFile.parent.path, output, assetsName));
       writer(generated, assetsPath);
-      stdout.writeln('[FlutterGen] Generated: $assetsPath');
+      stdout.writeln('[DSFlutterGen] Generated: $assetsPath');
     }
 
     if (flutterGen.fonts.enabled && flutter.fonts.isNotEmpty) {
@@ -77,9 +77,9 @@ class FlutterGenerator {
       final fontsPath =
           normalize(join(pubspecFile.parent.path, output, fontsName));
       writer(generated, fontsPath);
-      stdout.writeln('[FlutterGen] Generated: $fontsPath');
+      stdout.writeln('[DSFlutterGen] Generated: $fontsPath');
     }
 
-    stdout.writeln('[FlutterGen] Finished generating.');
+    stdout.writeln('[DSFlutterGen] Finished generating.');
   }
 }

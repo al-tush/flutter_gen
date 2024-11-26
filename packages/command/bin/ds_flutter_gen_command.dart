@@ -32,7 +32,7 @@ void main(List<String> args) {
   parser.addFlag(
     'version',
     abbr: 'v',
-    help: 'FlutterGen version',
+    help: 'DSFlutterGen version',
     defaultsTo: false,
   );
 
@@ -43,7 +43,7 @@ void main(List<String> args) {
       stdout.writeln(parser.usage);
       return;
     } else if (results.wasParsed('version')) {
-      stdout.writeln('FlutterGen v$packageVersion');
+      stdout.writeln('[DSFlutterGen] v$packageVersion');
       return;
     }
   } on FormatException catch (e) {

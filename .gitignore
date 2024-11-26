@@ -115,3 +115,5 @@ coverage.lcov
 packages/core/.idea
 packages/runner/.idea
 packages/command/.idea
+.idea
+.idea

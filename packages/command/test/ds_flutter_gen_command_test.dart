@@ -15,7 +15,7 @@ void main() {
     );
     expect(
       await process.stdout.next,
-      equals('[FlutterGen] v$packageVersion Loading ...'),
+      equals('[DSFlutterGen] v$packageVersion Loading ...'),
     );
     await process.shouldExit(0);
   });
@@ -27,7 +27,7 @@ void main() {
     );
     expect(
       await process.stdout.next,
-      equals('[FlutterGen] v$packageVersion Loading ...'),
+      equals('[DSFlutterGen] v$packageVersion Loading ...'),
     );
     await process.shouldExit(0);
   });
@@ -49,7 +49,7 @@ void main() {
       'dart',
       ['bin/ds_flutter_gen_command.dart', '--version'],
     );
-    expect(await process.stdout.next, equals('[FlutterGen] v$packageVersion'));
+    expect(await process.stdout.next, equals('[DSFlutterGen] v$packageVersion'));
     await process.shouldExit(0);
   });
 
@@ -60,7 +60,7 @@ void main() {
     );
     expect(
       await process.stderr.next,
-      equals('Could not find an option named "wrong".'),
+      equals('Could not find an option named "--wrong".'),
     );
     expect(
       await process.stderr.next,

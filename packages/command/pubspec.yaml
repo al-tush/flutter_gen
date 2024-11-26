@@ -10,7 +10,7 @@ executables:
   fluttergen: ds_flutter_gen_command
 
 dependencies:
-  ds_flutter_gen_core: 5.8.1
+  ds_flutter_gen_core: 5.8.2
   args: ^2.0.0
 
 dev_dependencies:

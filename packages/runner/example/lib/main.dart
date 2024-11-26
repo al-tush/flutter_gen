@@ -20,7 +20,7 @@ void main() async {
     ),
     home: Scaffold(
       appBar: AppBar(
-        title: const Text('FlutterGen'),
+        title: const Text('DSFlutterGen'),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -117,7 +117,7 @@ void main() async {
                 ),
               ),
               const Text(
-                'Hi there, I\'m FlutterGen',
+                'Hi there, I\'m DSFlutterGen',
                 style: TextStyle(
                   // Auto generated color from FlutterGen.
                   color: MyColorName.black60,
