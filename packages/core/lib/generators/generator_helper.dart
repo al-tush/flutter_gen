@@ -1,4 +1,4 @@
-import 'package:flutter_gen_core/settings/import.dart';
+import 'package:ds_flutter_gen_core/settings/import.dart';
 
 String get header {
   return '''/// GENERATED CODE - DO NOT MODIFY BY HAND

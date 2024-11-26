@@ -1,10 +1,7 @@
-name: flutter_gen_core
-description: The Flutter code generator for your assets, fonts, colors, … — Get rid of all String-based APIs.
+name: ds_flutter_gen_core
+description: Fork of the Flutter code generator for your assets, fonts, colors, … — Get rid of all String-based APIs. Prefer to use original flutter_gen
 version: 5.8.0
-homepage: https://github.com/FlutterGen/flutter_gen
-repository: https://github.com/FlutterGen/flutter_gen
-documentation: https://github.com/FlutterGen/flutter_gen
-issue_tracker: https://github.com/FlutterGen/flutter_gen/issues
+homepage: https://github.com/al-tush/flutter_gen
 
 environment:
   sdk: '>=2.17.0 <4.0.0'

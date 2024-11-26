@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_gen_core/flutter_generator.dart';
+import 'package:ds_flutter_gen_core/flutter_generator.dart';
 import 'package:test/test.dart';
 
 void main() {

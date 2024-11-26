@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:flutter_gen_core/flutter_generator.dart';
-import 'package:flutter_gen_core/utils/cast.dart';
-import 'package:flutter_gen_core/version.gen.dart';
+import 'package:ds_flutter_gen_core/flutter_generator.dart';
+import 'package:ds_flutter_gen_core/utils/cast.dart';
+import 'package:ds_flutter_gen_core/version.gen.dart';
 
 
 void main(List<String> args) {
@@ -48,7 +48,7 @@ void main(List<String> args) {
     }
   } on FormatException catch (e) {
     stderr.writeAll(
-        <String>[e.message, 'usage: flutter_gen [options...]', ''], '\n');
+        <String>[e.message, 'usage: ds_flutter_gen [options...]', ''], '\n');
     return;
   }
 

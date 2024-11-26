@@ -1,6 +1,6 @@
 import 'dart:io' show Platform;
 
-import 'package:flutter_gen_core/version.gen.dart';
+import 'package:ds_flutter_gen_core/version.gen.dart';
 import 'package:test/test.dart';
 import 'package:test_process/test_process.dart';
 
@@ -11,7 +11,7 @@ void main() {
   test('Execute fluttergen', () async {
     final process = await TestProcess.start(
       'dart',
-      ['bin/flutter_gen_command.dart'],
+      ['bin/ds_flutter_gen_command.dart'],
     );
     expect(
       await process.stdout.next,
@@ -23,7 +23,7 @@ void main() {
   test('Execute fluttergen --config pubspec.yaml', () async {
     var process = await TestProcess.start(
       'dart',
-      ['bin/flutter_gen_command.dart', '--config', 'pubspec.yaml'],
+      ['bin/ds_flutter_gen_command.dart', '--config', 'pubspec.yaml'],
     );
     expect(
       await process.stdout.next,
@@ -35,7 +35,7 @@ void main() {
   test('Execute fluttergen --help', () async {
     var process = await TestProcess.start(
       'dart',
-      ['bin/flutter_gen_command.dart', '--help'],
+      ['bin/ds_flutter_gen_command.dart', '--help'],
     );
     expect(await process.stdout.next,
         equals('-c, --config          Set the path of pubspec.yaml.'));
@@ -47,7 +47,7 @@ void main() {
   test('Execute fluttergen --version', () async {
     var process = await TestProcess.start(
       'dart',
-      ['bin/flutter_gen_command.dart', '--version'],
+      ['bin/ds_flutter_gen_command.dart', '--version'],
     );
     expect(await process.stdout.next, equals('[FlutterGen] v$packageVersion'));
     await process.shouldExit(0);
@@ -56,7 +56,7 @@ void main() {
   test('Execute wrong argments with fluttergen --wrong', () async {
     var process = await TestProcess.start(
       'dart',
-      ['bin/flutter_gen_command.dart', '--wrong'],
+      ['bin/ds_flutter_gen_command.dart', '--wrong'],
     );
     expect(
       await process.stderr.next,
@@ -64,7 +64,7 @@ void main() {
     );
     expect(
       await process.stderr.next,
-      equals('usage: flutter_gen [options...]'),
+      equals('usage: ds_flutter_gen [options...]'),
     );
     await process.shouldExit(0);
   });

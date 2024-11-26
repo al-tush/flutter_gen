@@ -1,4 +1,4 @@
-import 'package:flutter_gen_core/generators/integrations/integration.dart';
+import 'package:ds_flutter_gen_core/generators/integrations/integration.dart';
 
 class RiveIntegration extends Integration {
   RiveIntegration(String packageName) : super(packageName);

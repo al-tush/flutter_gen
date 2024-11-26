@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
-import 'package:flutter_gen_core/settings/asset_type.dart';
-import 'package:flutter_gen_core/settings/flavored_asset.dart';
+import 'package:ds_flutter_gen_core/settings/asset_type.dart';
+import 'package:ds_flutter_gen_core/settings/flavored_asset.dart';
 import 'package:test/test.dart';
 
 void main() {
