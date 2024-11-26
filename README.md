@@ -17,6 +17,8 @@
 
 The Flutter code generator for your assets, fonts, colors, … — Get rid of all String-based APIs.
 
+**This is a fork of flutter_gen. Prefer the original version.**
+
 Inspired by [SwiftGen](https://github.com/SwiftGen/SwiftGen).
 
 ## Motivation
