@@ -55,7 +55,7 @@ class FlutterGenerator {
       final colorsPath =
           normalize(join(pubspecFile.parent.path, output, colorsName));
       writer(generated, colorsPath);
-      stdout.writeln('[FlutterGen] Generated: $colorsPath');
+      stdout.writeln('[DSFlutterGen] Generated: $colorsPath');
     }
 
     if (flutterGen.assets.enabled && flutter.assets.isNotEmpty) {

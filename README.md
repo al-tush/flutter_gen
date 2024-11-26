@@ -51,7 +51,7 @@ Widget build(BuildContext context) {
 }
 ```
 
-## Installation
+## Installation process for original flutter_gen
 
 ### Homebrew
 
@@ -83,7 +83,7 @@ See also: [FlutterGen/asdf-fluttergen](https://github.com/FlutterGen/asdf-flutte
 Works with macOS, Linux and Windows.
 
 ```sh
-dart pub global activate flutter_gen
+dart pub global activate ds_flutter_gen
 ```
 
 You might need to [set up your path](https://dart.dev/tools/pub/cmd/pub-global#running-a-script-from-your-path).
@@ -95,7 +95,7 @@ You might need to [set up your path](https://dart.dev/tools/pub/cmd/pub-global#r
 ```
 dev_dependencies:
   build_runner:
-  flutter_gen_runner:
+  ds_flutter_gen_runner:
 ```
 
 2. Install [FlutterGen]
@@ -134,14 +134,14 @@ fluttergen -c example/pubspec.yaml
 
 ## Configuration file
 
-[FlutterGen] generates dart files based on the key **`flutter`** and **`flutter_gen`** of [`pubspec.yaml`](https://dart.dev/tools/pub/pubspec).  
+[FlutterGen] generates dart files based on the key **`flutter`** and **`ds_flutter_gen`** of [`pubspec.yaml`](https://dart.dev/tools/pub/pubspec).  
 Default configuration can be found [here](https://github.com/FlutterGen/flutter_gen/tree/main/packages/core/lib/settings/config_default.dart). 
 
 ```yaml
 # pubspec.yaml
 # ...
 
-flutter_gen:
+ds_flutter_gen:
   output: lib/gen/ # Optional (default: lib/gen/)
   line_length: 80 # Optional (default: 80)
 
@@ -181,7 +181,7 @@ You can also configure generate options in the `build.yaml`, it will be read bef
 targets:
   $default:
     builders:
-      flutter_gen_runner: # or flutter_gen
+      ds_flutter_gen_runner: # or flutter_gen
         options: 
           output: lib/build_gen/ # Optional (default: lib/gen/)
           line_length: 120 # Optional (default: 80)
@@ -219,7 +219,7 @@ These configurations will generate **`assets.gen.dart`** under the **`lib/gen/`*
 Flutter supports
 [Conditionally bundling assets based on flavor](https://docs.flutter.dev/deployment/flavors#conditionally-bundling-assets-based-on-flavor).
 Assets are only available with flavors if specified.
-`flutter_gen` will generate the specified `flavors` for assets regardless the current flavor.
+`ds_flutter_gen` will generate the specified `flavors` for assets regardless the current flavor.
 The `flavors` field accessible though `.flavors`, for example:
 
 ```dart
@@ -228,10 +228,10 @@ print(MyAssets.images.chip4.flavors); // -> {'extern'}
 
 #### Excluding generating for assets
 
-You can specify `flutter_gen > assets > exclude` using `Glob` patterns to exclude particular assets.
+You can specify `ds_flutter_gen > assets > exclude` using `Glob` patterns to exclude particular assets.
 
 ```yaml
-flutter_gen:
+ds_flutter_gen:
   assets:
     exclude:
       - folder-your-want-to-exclude/**
@@ -243,10 +243,10 @@ See more patterns with the `package:glob`.
 #### Generate for packages
 
 If you want to generate assets for a package,
-use `package_parameter_enabled` under `flutter_gen > assets > outputs`.
+use `package_parameter_enabled` under `ds_flutter_gen > assets > outputs`.
 
 ```yaml
-flutter_gen:
+ds_flutter_gen:
   assets:
     outputs:
       package_parameter_enabled: true # <- Add this line.
@@ -292,10 +292,10 @@ Widget build(BuildContext context) {
 #### Generate directories path
 
 If you want to generate the path of directories,
-use `directory_path_enabled` under `flutter_gen > assets > outputs`.
+use `directory_path_enabled` under `ds_flutter_gen > assets > outputs`.
 
 ```yaml
-flutter_gen:
+ds_flutter_gen:
   assets:
     outputs:
       directory_path_enabled: true # <- Add this line.
@@ -320,7 +320,7 @@ At build time, additional metadata may be included in the generated class, by us
 `parse_metadata` option.
 
 ```yaml
-flutter_gen:
+ds_flutter_gen:
   parse_metadata: true # <- Add this line (default: false)
 ```
 
@@ -375,7 +375,7 @@ If you are using SVG images with [flutter_svg](https://pub.dev/packages/flutter_
 
 ```yaml
 # pubspec.yaml
-flutter_gen:
+ds_flutter_gen:
   integrations:
     flutter_svg: true
 
@@ -416,7 +416,7 @@ final json = await rootBundle.loadString(Assets.json.fruits);
 
 ```yaml
 # pubspec.yaml
-flutter_gen:
+ds_flutter_gen:
   assets:
     outputs: 
       # Assets.imagesChip
@@ -473,10 +473,10 @@ These configurations will generate **`fonts.gen.dart`** under the **`lib/gen/`**
 #### Generate for packages
 
 If you want to generate fonts for a package,
-use `package_parameter_enabled` under `flutter_gen > fonts > outputs`.
+use `package_parameter_enabled` under `ds_flutter_gen > fonts > outputs`.
 
 ```yaml
-flutter_gen:
+ds_flutter_gen:
   fonts:
     outputs:
       package_parameter_enabled: true # <- Add this line.
@@ -516,7 +516,7 @@ _Ignore duplicated._
 
 ```yaml
 # pubspec.yaml
-flutter_gen:
+ds_flutter_gen:
   colors:
     inputs:
       - assets/color/colors.xml
