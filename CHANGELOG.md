@@ -1,3 +1,8 @@
+## 5.8.2
+- renaming
+- fix ds_flutter_gen_command_test.dart
+- fix version string
+
 ## 5.8.1
 - add theme support
 - remove color property deprecation

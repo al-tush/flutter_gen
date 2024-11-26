@@ -1,6 +1,6 @@
 name: ds_flutter_gen
 description: Fork of the Flutter code generator for your assets, fonts, colors, … — Get rid of all String-based APIs. Prefer to use original flutter_gen
-version: 5.8.1
+version: 5.8.2
 homepage: https://github.com/al-tush/flutter_gen
 
 environment:
