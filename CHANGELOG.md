@@ -1,3 +1,7 @@
+## 5.8.1
+- add theme support
+- remove color property deprecation
+
 ## 5.8.0
 
 **Feature**
