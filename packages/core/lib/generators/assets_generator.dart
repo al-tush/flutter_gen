@@ -270,14 +270,14 @@ AssetType _constructAssetTree(
 ) {
   // Relative path is the key
   final assetTypeMap = <String, AssetType>{
-    '.': AssetType(rootPath: rootPath, path: '.', flavors: {}),
+    '.': AssetType(rootPath: rootPath, path: '.', flavors: {}, isThemed: false),
   };
   for (final asset in assetRelativePathList) {
     String path = asset.path;
     while (path != '.') {
       assetTypeMap.putIfAbsent(
         path,
-        () => AssetType(rootPath: rootPath, path: path, flavors: asset.flavors),
+        () => AssetType(rootPath: rootPath, path: path, flavors: asset.flavors, isThemed: false),
       );
       path = dirname(path);
     }
@@ -298,6 +298,8 @@ Future<_Statement?> _createAssetTypeStatement(
   UniqueAssetType assetType,
   List<Integration> integrations,
 ) async {
+  String posixConv(String s) => s.replaceAll(r'\', r'/');
+
   final childAssetAbsolutePath = join(config.rootPath, assetType.path);
   if (FileSystemEntity.isDirectorySync(childAssetAbsolutePath)) {
     final childClassName = '\$${assetType.path.camelCase().capitalize()}Gen';
@@ -307,7 +309,7 @@ Future<_Statement?> _createAssetTypeStatement(
       filePath: assetType.posixStylePath,
       name: assetType.name,
       value: '$childClassName()',
-      value2: null,
+      value2: assetType.isThemed ? '${childClassName}2()' : null,
       isConstConstructor: true,
       isDirectory: true,
       needDartDoc: false,
@@ -337,8 +339,8 @@ Future<_Statement?> _createAssetTypeStatement(
         type: 'String',
         filePath: assetType.posixStylePath,
         name: assetType.name,
-        value: '\'$assetKey\'',
-        value2: null,
+        value: '\'${posixConv(assetType.pathThemed1())}\'',
+        value2: assetType.isThemed ? '\'${posixConv(assetType.pathThemed2())}\'' : null,
         isConstConstructor: false,
         isDirectory: false,
         needDartDoc: true,
@@ -350,8 +352,20 @@ Future<_Statement?> _createAssetTypeStatement(
         type: integration.className,
         filePath: assetType.posixStylePath,
         name: assetType.name,
-        value: integration.classInstantiate(assetType),
-        value2: null,
+        value: integration.classInstantiate(
+          AssetType(
+            rootPath: assetType.rootPath,
+            path: posixConv(assetType.pathThemed1()),
+            flavors: assetType.flavors,
+          ),
+        ),
+        value2: assetType.isThemed ? integration.classInstantiate(
+            AssetType(
+              rootPath: assetType.rootPath,
+              path: posixConv(assetType.pathThemed2()),
+              flavors: assetType.flavors,
+            ))
+            : null,
         isConstConstructor: integration.isConstConstructor,
         isDirectory: false,
         needDartDoc: true,
@@ -396,6 +410,7 @@ Future<String> _dotDelimiterStyleDefinition(
     if (isDirectory || isRootAsset) {
       final List<_Statement?> results = await Future.wait(
         assetType.children
+            .groupToThemes()
             .mapToUniqueAssetType(camelCase, justBasename: true)
             .map(
               (e) => _createAssetTypeStatement(
@@ -504,6 +519,7 @@ Future<String> _flatStyleDefinition(
             flavors: assetPath.flavors,
           ),
         )
+        .groupToThemes()
         .mapToUniqueAssetType(style)
         .map(
           (e) => _createAssetTypeStatement(
@@ -579,6 +595,10 @@ String _assetsClassDefinition(
   String? packageName,
 ) {
   return '''
+var _isDarkTheme = false;
+
+void setDarkTheme(bool value) => _isDarkTheme = value;
+
 class $className {
   $className._();
 ${packageName != null ? "\n  static const String package = '$packageName';" : ''}
@@ -656,7 +676,7 @@ class _Statement {
   final bool isDirectory;
   final bool needDartDoc;
 
-  String toDartDocString() => '/// File path: $filePath';
+  String toDartDocString() => '/// File path: $filePath${isThemed ? ' (light and dark)' : ''}';
 
   String toGetterString() {
     final buffer = StringBuffer('');
@@ -666,9 +686,15 @@ class _Statement {
         '${Directory(filePath).path.replaceAll(r'\', r'/')}',
       );
     }
-    buffer.writeln(
-      '$type get $name => ${isConstConstructor ? 'const' : ''} $value;',
-    );
+    if (isThemed && value2 != null) {
+      buffer.writeln(
+        '$type get $name => _isDarkTheme ? ${isConstConstructor ? 'const' : ''} $value2 : ${isConstConstructor ? 'const' : ''} $value;',
+      );
+    } else {
+      buffer.writeln(
+        '$type get $name => ${isConstConstructor ? 'const' : ''} $value;',
+      );
+    }
     return buffer.toString();
   }
 

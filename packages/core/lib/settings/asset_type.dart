@@ -76,6 +76,7 @@ class AssetType {
 
   String pathThemed2() {
     assert(isThemed);
+    print('${p.withoutExtension(path)}$_dark$extension');
     return '${p.withoutExtension(path)}$_dark$extension';
   }
 
@@ -106,6 +107,7 @@ class UniqueAssetType extends AssetType {
           rootPath: assetType.rootPath,
           path: assetType.path,
           flavors: assetType.flavors,
+          isThemed: assetType.isThemed,
         );
 
   /// Convert the asset name to a correctly styled name, e.g camelCase or
@@ -150,6 +152,28 @@ class UniqueAssetType extends AssetType {
 }
 
 extension AssetTypeIterable on Iterable<AssetType> {
+
+  Iterable<AssetType> groupToThemes() {
+    return groupBy((e) => p.withoutExtension(e.pathWithoutTheme))
+        .values
+        .map(
+            (list) {
+          if (list.length == 2 && list[0].extension == list[1].extension) {
+            return [
+              AssetType(
+                rootPath: list[0].rootPath,
+                path: list[0].pathWithoutTheme,
+                flavors: list[0].flavors,
+                isThemed: true,
+              ),
+            ];
+          }
+          return list;
+        }
+    )
+        .flatten();
+  }
+
   /// Takes a Iterable<AssetType> and mutates the AssetType's to ensure each
   /// AssetType has a unique name.
   ///
