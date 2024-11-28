@@ -76,7 +76,6 @@ class AssetType {
 
   String pathThemed2() {
     assert(isThemed);
-    print('${p.withoutExtension(path)}$_dark$extension');
     return '${p.withoutExtension(path)}$_dark$extension';
   }
 
