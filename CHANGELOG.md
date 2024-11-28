@@ -1,3 +1,7 @@
+## 5.8.3
+- fixed theme support bugs (because of incorrect merge)
+- rename yaml section from flutter_gen to ds_flutter_gen
+
 ## 5.8.2
 - renaming
 - fix ds_flutter_gen_command_test.dart
