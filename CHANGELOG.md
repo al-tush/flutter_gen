@@ -1,3 +1,6 @@
+## 5.8.4
+- update archive dependency
+
 ## 5.8.3
 - fixed theme support bugs (because of incorrect merge)
 - rename yaml section from flutter_gen to ds_flutter_gen
