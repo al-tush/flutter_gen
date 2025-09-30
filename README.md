@@ -53,32 +53,29 @@ Widget build(BuildContext context) {
 }
 ```
 
-## Installation process for original flutter_gen
+## Installation
 
-### Homebrew
+### As a part of build_runner
 
-Works with macOS and Linux.
+1. Add [build_runner] and [FlutterGen] to your package's pubspec.yaml file:
 
-```sh
-brew install FlutterGen/tap/fluttergen
-```
+   ```yaml
+   dev_dependencies:
+     build_runner:
+     flutter_gen_runner:
+   ```
 
-### asdf
+2. Install [FlutterGen]
 
-Works with macOS and Linux.
-asdf-fluttergen is compatible with [mise](https://mise.jdx.dev/).
+   ```sh
+   flutter pub get
+   ```
 
-```sh
-# add plugin
-asdf plugin add fluttergen
-# or
-asdf plugin add fluttergen https://github.com/FlutterGen/asdf-fluttergen.git
+3. Use [FlutterGen]
 
-# install fluttergen
-asdf install fluttergen latest
-```
-
-See also: [FlutterGen/asdf-fluttergen](https://github.com/FlutterGen/asdf-fluttergen)
+   ```sh
+   dart run build_runner build
+   ```
 
 ### Pub Global
 
@@ -89,28 +86,6 @@ dart pub global activate ds_flutter_gen
 ```
 
 You might need to [set up your path](https://dart.dev/tools/pub/cmd/pub-global#running-a-script-from-your-path).
-
-### As a part of build_runner
-
-1. Add [build_runner] and [FlutterGen] to your package's pubspec.yaml file:
-
-```
-dev_dependencies:
-  build_runner:
-  ds_flutter_gen_runner:
-```
-
-2. Install [FlutterGen]
-
-```sh
-flutter pub get
-```
-
-3. Use [FlutterGen]
-
-```sh
-dart run build_runner build
-```
 
 ### GitHub Actions
 
@@ -136,21 +111,21 @@ fluttergen -c example/pubspec.yaml
 
 ## Configuration file
 
-[DSFlutterGen] generates dart files based on the key **`flutter`** and **`ds_flutter_gen`** of [`pubspec.yaml`](https://dart.dev/tools/pub/pubspec).  
-Default configuration can be found [here](https://github.com/FlutterGen/flutter_gen/tree/main/packages/core/lib/settings/config_default.dart). 
+[FlutterGen] generates dart files based on the key **`flutter`** and **`flutter_gen`** of [`pubspec.yaml`](https://dart.dev/tools/pub/pubspec).  
+Default configuration can be found [here](https://github.com/FlutterGen/flutter_gen/tree/main/packages/core/lib/settings/config_default.dart).
 
 ```yaml
 # pubspec.yaml
 # ...
 
-ds_flutter_gen:
+flutter_gen:
   output: lib/gen/ # Optional (default: lib/gen/)
-  line_length: 80 # Optional (default: 80)
+  # line_length: 80 # Optional
 
   # Optional
   integrations:
+    image: true
     flutter_svg: true
-    flare_flutter: true
     rive: true
     lottie: true
 
@@ -175,7 +150,6 @@ flutter:
 
 You can also configure generate options in the `build.yaml`, it will be read before the `pubspec.yaml` if it exists.
 
-
 ```yaml
 # build.yaml
 # ...
@@ -183,10 +157,10 @@ You can also configure generate options in the `build.yaml`, it will be read bef
 targets:
   $default:
     builders:
-      ds_flutter_gen_runner: # or flutter_gen
-        options: 
+      flutter_gen_runner: # or flutter_gen
+        options:
           output: lib/build_gen/ # Optional (default: lib/gen/)
-          line_length: 120 # Optional (default: 80)
+          line_length: 120 # Optional
 ```
 
 ## Available Parsers
@@ -206,12 +180,23 @@ flutter:
     - assets/images/
     - assets/images/chip3/chip.jpg
     - assets/images/chip4/chip.jpg
-    - assets/images/icons/paint.svg
+    - path: assets/images/icons/paint.svg
+    - path: assets/images/icons/transformed.svg
+      transformers:
+        - package: vector_graphics_compiler
     - assets/images/icons/dart@test.svg
     - assets/json/fruits.json
     - assets/flare/Penguin.flr
     - assets/rive/vehicles.riv
     - pictures/ocean_view.jpg
+
+  # Also include assets from deferred components
+  # https://docs.flutter.dev/perf/deferred-components
+  deferred-components:
+    - name: myDeferredComponent
+      assets:
+        - assets/images/another_image.jps
+        - assets/videos/a_large_video.mp4
 ```
 
 These configurations will generate **`assets.gen.dart`** under the **`lib/gen/`** directory by default.
@@ -221,7 +206,7 @@ These configurations will generate **`assets.gen.dart`** under the **`lib/gen/`*
 Flutter supports
 [Conditionally bundling assets based on flavor](https://docs.flutter.dev/deployment/flavors#conditionally-bundling-assets-based-on-flavor).
 Assets are only available with flavors if specified.
-`ds_flutter_gen` will generate the specified `flavors` for assets regardless the current flavor.
+`flutter_gen` will generate the specified `flavors` for assets regardless the current flavor.
 The `flavors` field accessible though `.flavors`, for example:
 
 ```dart
@@ -230,10 +215,10 @@ print(MyAssets.images.chip4.flavors); // -> {'extern'}
 
 #### Excluding generating for assets
 
-You can specify `ds_flutter_gen > assets > exclude` using `Glob` patterns to exclude particular assets.
+You can specify `flutter_gen > assets > exclude` using `Glob` patterns to exclude particular assets.
 
 ```yaml
-ds_flutter_gen:
+flutter_gen:
   assets:
     exclude:
       - folder-your-want-to-exclude/**
@@ -245,10 +230,10 @@ See more patterns with the `package:glob`.
 #### Generate for packages
 
 If you want to generate assets for a package,
-use `package_parameter_enabled` under `ds_flutter_gen > assets > outputs`.
+use `package_parameter_enabled` under `flutter_gen > assets > outputs`.
 
 ```yaml
-ds_flutter_gen:
+flutter_gen:
   assets:
     outputs:
       package_parameter_enabled: true # <- Add this line.
@@ -258,7 +243,7 @@ This would add the package constant to the generated class. For example:
 
 ```dart
 class Assets {
-  Assets._();
+  const Assets._();
 
   static const String package = 'test';
 
@@ -278,7 +263,9 @@ Widget build(BuildContext context) {
   );
 }
 ```
+
 or
+
 ```dart
 // Explicit usage for `Image`/`SvgPicture`/`Lottie`.
 Widget build(BuildContext context) {
@@ -294,10 +281,10 @@ Widget build(BuildContext context) {
 #### Generate directories path
 
 If you want to generate the path of directories,
-use `directory_path_enabled` under `ds_flutter_gen > assets > outputs`.
+use `directory_path_enabled` under `flutter_gen > assets > outputs`.
 
 ```yaml
-ds_flutter_gen:
+flutter_gen:
   assets:
     outputs:
       directory_path_enabled: true # <- Add this line.
@@ -322,7 +309,7 @@ At build time, additional metadata may be included in the generated class, by us
 `parse_metadata` option.
 
 ```yaml
-ds_flutter_gen:
+flutter_gen:
   parse_metadata: true # <- Add this line (default: false)
 ```
 
@@ -330,8 +317,10 @@ For image based assets, a new nullable `size` field is added to the
 generated class. For example:
 
 ```dart
-AssetGenImage get logo => 
-  const AssetGenImage('assets/images/logo.png', size: Size(209.0, 49.0));
+AssetGenImage get logo => const AssetGenImage(
+  'assets/images/logo.png',
+  size: Size(209.0, 49.0),
+);
 ```
 
 Which can now be used at runtime without parsing the information from the actual asset.
@@ -340,6 +329,32 @@ Which can now be used at runtime without parsing the information from the actual
 Widget build(BuildContext context) {
   return Assets.images.logo.size!.width;
 }
+```
+
+You can use `parse_animation` to generate more animation details.
+It will automatically parse all animation information for GIF and WebP files,
+including frames, duration, etc. As this option significantly increases generation time,
+The option is disabled by default; enabling it will significantly increase the generation elapse.
+
+```yaml
+flutter_gen:
+  images:
+    parse_animation: true # <- Add this line (default: false)
+    # This option implies parse_metadata: true when parsing images.
+```
+
+For GIF and WebP animation, several new nullable field is added to the
+generated class. For example:
+
+```dart
+AssetGenImage get animated =>
+  const AssetGenImage(
+    'assets/images/animated.webp',
+    size: Size(209.0, 49.0),
+    isAnimation: true,
+    duration: Duration(milliseconds: 1000),
+    frames: 15,
+  );
 ```
 
 #### Usage Example
@@ -373,17 +388,29 @@ Widget build(BuildContext context) {
 
 ```
 
-If you are using SVG images with [flutter_svg](https://pub.dev/packages/flutter_svg) you can use the integration feature.
+If you do not want to generate `AssetGenImage`, set `flutter_gen > integrations > image` to `false`.
 
 ```yaml
 # pubspec.yaml
-ds_flutter_gen:
+flutter_gen:
+  integrations:
+    image: false
+```
+
+If you are using SVG images with [flutter_svg](https://pub.dev/packages/flutter_svg) you can use the integration feature. This feature also supports using `vector_graphics_compiler` transformer and the produced code will use the `AssetBytesLoader` for such transformed assets.
+
+```yaml
+# pubspec.yaml
+flutter_gen:
   integrations:
     flutter_svg: true
 
 flutter:
   assets:
     - assets/images/icons/paint.svg
+    - path: assets/images/icons/transformed.svg
+      transformers:
+        - package: vector_graphics_compiler
 ```
 
 ```dart
@@ -397,13 +424,13 @@ Widget build(BuildContext context) {
 
 **Available Integrations**
 
-| Packages                                                | File extension | Setting               | Usage                                     |
-|---------------------------------------------------------|----------------|-----------------------|-------------------------------------------|
-| [flutter_svg](https://pub.dev/packages/flutter_svg)     | .svg           | `flutter_svg: true`   | Assets.images.icons.paint.**svg()**       |
-| [flare_flutter](https://pub.dev/packages/flare_flutter) | .flr           | `flare_flutter: true` | Assets.flare.penguin.**flare()**          |
-| [rive](https://pub.dev/packages/rive)                   | .flr           | `rive: true`          | Assets.rive.vehicles.**rive()**           |
-| [lottie](https://pub.dev/packages/lottie)               | .json, .zip    | `lottie: true`        | Assets.lottie.hamburgerArrow.**lottie()** |
+| Packages                                            | File extension             | Setting             | Usage                                     |
+| --------------------------------------------------- | -------------------------- | ------------------- | ----------------------------------------- |
+| [flutter_svg](https://pub.dev/packages/flutter_svg) | .svg                       | `flutter_svg: true` | Assets.images.icons.paint.**svg()**       |
+| [rive](https://pub.dev/packages/rive)               | .riv                       | `rive: true`        | Assets.rive.vehicles.**rive()**           |
+| [lottie](https://pub.dev/packages/lottie)           | .json, .zip, .lottie, .tgs | `lottie: true`      | Assets.lottie.hamburgerArrow.**lottie()** |
 
+**Note:** For [lottie](https://pub.dev/packages/lottie) integration with `.lottie` and `.tgs` files, you must add a custom decoder via `decoder` parameter, see [lottie's document](https://pub.dev/packages/lottie#telegram-stickers-tgs-and-dotlottie-lottie) for more information.
 
 In other cases, the asset is generated as String class.
 
@@ -418,9 +445,9 @@ final json = await rootBundle.loadString(Assets.json.fruits);
 
 ```yaml
 # pubspec.yaml
-ds_flutter_gen:
+flutter_gen:
   assets:
-    outputs: 
+    outputs:
       # Assets.imagesChip
       # style: camel-case
 
@@ -475,10 +502,10 @@ These configurations will generate **`fonts.gen.dart`** under the **`lib/gen/`**
 #### Generate for packages
 
 If you want to generate fonts for a package,
-use `package_parameter_enabled` under `ds_flutter_gen > fonts > outputs`.
+use `package_parameter_enabled` under `flutter_gen > fonts > outputs`.
 
 ```yaml
-ds_flutter_gen:
+flutter_gen:
   fonts:
     outputs:
       package_parameter_enabled: true # <- Add this line.
@@ -518,7 +545,7 @@ _Ignore duplicated._
 
 ```yaml
 # pubspec.yaml
-ds_flutter_gen:
+flutter_gen:
   colors:
     inputs:
       - assets/color/colors.xml
@@ -568,7 +595,9 @@ Plugin issues that are not specific to [FlutterGen] can be filed in the [Flutter
 ### Known Issues
 
 #### Bad State: No Element when using build_runner
+
 If you get an error message like this:
+
 ```
 [SEVERE] flutter_gen_runner:flutter_gen_runner on $package$:
 
@@ -583,7 +612,7 @@ targets:
   $default:
     sources:
       include:
-        - pubspec.yaml  # add this line
+        - pubspec.yaml # add this line
         - ...
 ```
 
@@ -606,8 +635,6 @@ template-arb-file: app_en.arb
 output-localization-file: app_localizations.dart
 synthetic-package: false <--- ⚠️Add this line⚠️
 ```
-
-If you get 
 
 ## Contributing
 

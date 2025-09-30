@@ -20,7 +20,7 @@ void main() async {
     ),
     home: Scaffold(
       appBar: AppBar(
-        title: const Text('FlutterGen'),
+        title: const Text('DSFlutterGen'),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -28,14 +28,6 @@ void main() async {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               // Auto generated image from FlutterGen.
-              SizedBox(
-                width: 200,
-                height: 200,
-                child: MyAssets.flare.penguin.flare(
-                  animation: 'walk',
-                  fit: BoxFit.contain,
-                ),
-              ),
               SizedBox(
                 width: 200,
                 height: 200,
@@ -105,19 +97,12 @@ void main() async {
               SizedBox(
                 width: 200,
                 height: 200,
-                child: ResAssets.images.favorite.flare(
-                  shouldClip: false,
-                ),
-              ),
-              SizedBox(
-                width: 200,
-                height: 200,
                 child: ResAssets.images.runningCarOnRoad.lottie(
                   fit: BoxFit.contain,
                 ),
               ),
               const Text(
-                'Hi there, I\'m FlutterGen',
+                'Hi there, I\'m DSFlutterGen',
                 style: TextStyle(
                   // Auto generated color from FlutterGen.
                   color: MyColorName.black60,

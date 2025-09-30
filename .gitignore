@@ -112,8 +112,3 @@ coverage.lcov
 
 ## Test resources
 **/test_resources/lib
-packages/core/.idea
-packages/runner/.idea
-packages/command/.idea
-.idea
-.idea

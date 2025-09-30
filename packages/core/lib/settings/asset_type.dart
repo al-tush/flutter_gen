@@ -10,51 +10,18 @@ class AssetType {
     required this.rootPath,
     required this.path,
     required this.flavors,
+    required this.transformers,
     this.isThemed = false,
   });
 
   final String rootPath;
   final String path;
   final Set<String> flavors;
+  final Set<String> transformers;
   final bool isThemed;
 
   final List<AssetType> _children = List.empty(growable: true);
-
-  bool get isDefaultAssetsDirectory => path == 'assets' || path == 'asset';
-
-  String? get mime => lookupMimeType(path);
-
-  bool get isIgnoreFile {
-    switch (baseName) {
-      case '.DS_Store':
-        return true;
-    }
-
-    switch (extension) {
-      case '.DS_Store':
-      case '.swp':
-        return true;
-    }
-
-    return false;
-  }
-
-  bool get isUnKnownMime => mime == null;
-
-  /// Returns a name for this asset.
-  String get name => p.withoutExtension(path);
-
-  String get baseName => p.basenameWithoutExtension(path);
-
-  String get extension => p.extension(path);
-
-  /// Returns the full absolute path for reading the asset file.
-  String get fullPath => p.join(rootPath, path);
-
-  // Replace to Posix style for Windows separator.
-  String get posixStylePath => path.replaceAll(r'\', r'/');
-
-  List<AssetType> get children => _children.sortedBy((e) => e.path);
+  late final children = _children.sortedBy((e) => e.path);
 
   static const _light = '_light';
   static const _dark = '_dark';
@@ -79,6 +46,34 @@ class AssetType {
     return '${p.withoutExtension(path)}$_dark$extension';
   }
 
+  late final isDefaultAssetsDirectory = path == 'assets' || path == 'asset';
+  late final mime = lookupMimeType(path);
+  late final isUnKnownMime = mime == null;
+
+  /// Returns a name for this asset.
+  late final name = p.withoutExtension(path);
+  late final baseName = p.basenameWithoutExtension(path);
+  late final extension = p.extension(path);
+
+  /// Returns the full absolute path for reading the asset file.
+  late final fullPath = p.join(rootPath, path);
+
+  // Replace to Posix style for Windows separator.
+  late final posixStylePath = path.replaceAll(r'\', r'/');
+
+  late final bool isIgnoreFile = () {
+    switch (baseName) {
+      case '.DS_Store':
+        return true;
+    }
+    switch (extension) {
+      case '.DS_Store':
+      case '.swp':
+        return true;
+    }
+    return false;
+  }();
+
   void addChild(AssetType type) {
     _children.add(type);
   }
@@ -87,7 +82,8 @@ class AssetType {
   String toString() => 'AssetType('
       'rootPath: $rootPath, '
       'path: $path, '
-      'flavors: $flavors'
+      'flavors: $flavors, '
+      'transformers: $transformers'
       ')';
 }
 
@@ -106,8 +102,9 @@ class UniqueAssetType extends AssetType {
           rootPath: assetType.rootPath,
           path: assetType.path,
           flavors: assetType.flavors,
+          transformers: assetType.transformers,
           isThemed: assetType.isThemed,
-        );
+  );
 
   /// Convert the asset name to a correctly styled name, e.g camelCase or
   /// snakeCase.
@@ -146,34 +143,14 @@ class UniqueAssetType extends AssetType {
         'path: $path, '
         'style: $style, '
         'needExtension: $needExtension, '
-        'suffix: $suffix}';
+        'suffix: $suffix, '
+        'flavors: $flavors, '
+        'transformers: $transformers}';
   }
 }
 
 extension AssetTypeIterable on Iterable<AssetType> {
-
-  Iterable<AssetType> groupToThemes() {
-    return groupBy((e) => p.withoutExtension(e.pathWithoutTheme))
-        .values
-        .map(
-            (list) {
-          if (list.length == 2 && list[0].extension == list[1].extension) {
-            return [
-              AssetType(
-                rootPath: list[0].rootPath,
-                path: list[0].pathWithoutTheme,
-                flavors: list[0].flavors,
-                isThemed: true,
-              ),
-            ];
-          }
-          return list;
-        }
-    )
-        .flatten();
-  }
-
-  /// Takes a Iterable<AssetType> and mutates the AssetType's to ensure each
+  /// Takes a `Iterable<AssetType>` and mutates the AssetType's to ensure each
   /// AssetType has a unique name.
   ///
   /// The strategy is as follows:
@@ -197,26 +174,32 @@ extension AssetTypeIterable on Iterable<AssetType> {
     String Function(String) style, {
     bool justBasename = false,
   }) {
-    List<UniqueAssetType> assets = map((e) => UniqueAssetType(
-          assetType: e,
-          style: style,
-          needExtension: false,
-          suffix: '',
-          basenameOnly: justBasename,
-        )).toList();
+    List<UniqueAssetType> assets = map(
+      (e) => UniqueAssetType(
+        assetType: e,
+        style: style,
+        needExtension: false,
+        suffix: '',
+        basenameOnly: justBasename,
+      ),
+    ).toList();
 
     while (true) {
       // Check if we have any name collisions.
-      final dups = assets.groupBy((e) => e.name).values;
+      final duplicates = assets.groupBy((e) => e.name).values;
 
       // No more duplicates, so we can bail.
-      if (dups.every((list) => list.length == 1)) break;
+      if (duplicates.every((list) => list.length == 1)) {
+        break;
+      }
 
       // Otherwise start to process the list and mutate the assets as needed.
-      assets = dups
+      assets = duplicates
           .map((list) {
-            assert(list.isNotEmpty,
-                'The groupBy list of assets should not be empty.');
+            assert(
+              list.isNotEmpty,
+              'The groupBy list of assets should not be empty.',
+            );
 
             // Check the first element in the list. Since we grouped by each
             // list element should have the same name.
@@ -245,7 +228,9 @@ extension AssetTypeIterable on Iterable<AssetType> {
             list.forEachIndexed((asset, index) {
               // Shouldn't need to mutate the first item (unless it's an invalid
               // identifer).
-              if (index == 0 && isValidIdentifer) return;
+              if (index == 0 && isValidIdentifer) {
+                return;
+              }
 
               // Append a extra suffixes to each item so they hopefully become unique
               suffix = '${suffix}_';
@@ -258,9 +243,33 @@ extension AssetTypeIterable on Iterable<AssetType> {
           .toList();
     }
 
-    assert(assets.map((e) => e.name).distinct().length == assets.length,
-        'There are duplicate names in the asset list.');
+    assert(
+      assets.map((e) => e.name).distinct().length == assets.length,
+      'There are duplicate names in the asset list.',
+    );
 
     return assets;
+  }
+
+  Iterable<AssetType> groupToThemes() {
+    return groupBy((e) => p.withoutExtension(e.pathWithoutTheme))
+        .values
+        .map(
+            (list) {
+          if (list.length == 2 && list[0].extension == list[1].extension) {
+            return [
+              AssetType(
+                rootPath: list[0].rootPath,
+                path: list[0].pathWithoutTheme,
+                flavors: list[0].flavors,
+                transformers: list[0].transformers,
+                isThemed: true,
+              ),
+            ];
+          }
+          return list;
+        }
+    )
+        .flatten();
   }
 }
